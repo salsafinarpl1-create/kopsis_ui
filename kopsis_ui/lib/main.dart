@@ -141,17 +141,52 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
 
-            Expanded(
-              child: ListView.builder(
-                itemCount: hasilCari.length,
-                itemBuilder: (context, index) {
-                  final barang = hasilCari[index];
+            // Menampilkan lebar layar
+            Builder(
+              builder: (context) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Lebar layar: ${MediaQuery.of(context).size.width.toStringAsFixed(0)} px',
+                    ),
+                  ),
+                );
+              },
+            ),
 
-                  return BarangCard(
-                    nama: barang['nama'],
-                    hargaAnggota: barang['anggota'],
-                    stok: barang['stok'],
-                    kategori: barang['kategori'],
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  int kolom;
+
+                  if (constraints.maxWidth < 600) {
+                    kolom = 1;
+                  } else if (constraints.maxWidth < 900) {
+                    kolom = 2;
+                  } else {
+                    kolom = 3;
+                  }
+
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(8),
+                    gridDelegate:
+                        SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: kolom,
+                      childAspectRatio: 3,
+                    ),
+                    itemCount: hasilCari.length,
+                    itemBuilder: (context, index) {
+                      final barang = hasilCari[index];
+
+                      return BarangCard(
+                        nama: barang['nama'],
+                        hargaAnggota: barang['anggota'],
+                        stok: barang['stok'],
+                        kategori: barang['kategori'],
+                      );
+                    },
                   );
                 },
               ),

@@ -20,28 +20,82 @@ class BarangCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: sorot ? Colors.green[100] : null,
-      margin: const EdgeInsets.all(8),
-      child: ListTile(
-        leading: const Icon(Icons.inventory_2),
-        title: Text(
-          nama,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Column(
+      color: Colors.green[100],
+      margin: const EdgeInsets.all(6),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Anggota Rp $hargaAnggota'),
-            Text(
-              kategori,
-              style: const TextStyle(fontSize: 12),
+            // Informasi barang
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.inventory_2,
+                  color: Colors.green,
+                ),
+                const SizedBox(width: 8),
+
+                // Nama dan informasi barang
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        nama,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      Text(
+                        'Anggota Rp $hargaAnggota',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 13,
+                        ),
+                      ),
+
+                      Text(
+                        kategori,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.green,
+                        ),
+                      ),
+
+                      Text(
+                        'Stok: $stok',
+                        style: const TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 6),
+
+            // Keranjang
+            Center(
+              child: KeranjangItem(
+                stok: stok,
+                harga: hargaAnggota,
+              ),
             ),
           ],
-        ),
-        trailing: KeranjangItem(
-          stok: stok,
-          harga: hargaAnggota,
         ),
       ),
     );

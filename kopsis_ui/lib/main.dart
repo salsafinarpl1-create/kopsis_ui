@@ -98,12 +98,29 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.green,
+        ),
+        useMaterial3: true,
+      ),
+
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Koperasi Sekolah'),
+          title: const Text(
+            'Koperasi Sekolah',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
         ),
+
         body: Column(
           children: [
+            // TEXT FIELD PENCARIAN
             Padding(
               padding: const EdgeInsets.all(12),
               child: TextField(
@@ -111,8 +128,17 @@ class _MyAppState extends State<MyApp> {
                   labelText: 'Cari barang',
                   hintText: 'Masukkan nama barang',
                   prefixIcon: const Icon(Icons.search),
+                  filled: true,
+                  fillColor: Colors.green[50],
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      color: Colors.green,
+                      width: 2,
+                    ),
                   ),
                 ),
                 onChanged: (value) {
@@ -123,6 +149,7 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
 
+            // INFORMASI LEBAR LAYAR
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Align(
@@ -133,18 +160,21 @@ class _MyAppState extends State<MyApp> {
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
+                    color: Colors.green,
                   ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
 
+            // EXPANDED
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   int jumlahKolom;
 
+                  // RESPONSIVE GRID
                   if (constraints.maxWidth < 600) {
                     jumlahKolom = 1;
                   } else if (constraints.maxWidth < 1000) {
@@ -155,17 +185,19 @@ class _MyAppState extends State<MyApp> {
 
                   return GridView.builder(
                     padding: const EdgeInsets.all(8),
+
                     gridDelegate:
                         SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: jumlahKolom,
                       crossAxisSpacing: 8,
                       mainAxisSpacing: 8,
 
-                      // Dibuat lebih proporsional agar tidak
-                      // menyebabkan overflow ke bawah.
-                      childAspectRatio: 1.8,
+                      // Ukuran kartu dibuat aman
+                      childAspectRatio: 1.65,
                     ),
+
                     itemCount: daftarFilter.length,
+
                     itemBuilder: (context, index) {
                       final barang = daftarFilter[index];
 
@@ -188,6 +220,10 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+// ============================================================
+// BARANG CARD - STATELESS
+// ============================================================
+
 class BarangCard extends StatelessWidget {
   final String nama;
   final int hargaAnggota;
@@ -207,35 +243,44 @@ class BarangCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: sorot ? Colors.green[100] : null,
-      margin: const EdgeInsets.all(8),
+      color: Colors.green[100],
+      margin: EdgeInsets.zero,
+      elevation: 2,
+
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(10),
 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Icon berada di atas
-            const Icon(
-              Icons.inventory_2,
-              size: 32,
+            // ICON + NAMA
+            Row(
+              children: [
+                const Icon(
+                  Icons.inventory_2,
+                  color: Colors.green,
+                  size: 28,
+                ),
+
+                const SizedBox(width: 8),
+
+                Expanded(
+                  child: Text(
+                    nama,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 5),
 
-            // Nama barang dipotong jika terlalu panjang
-            Text(
-              nama,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 4),
-
+            // HARGA
             Text(
               'Anggota Rp $hargaAnggota',
               maxLines: 1,
@@ -245,25 +290,32 @@ class BarangCard extends StatelessWidget {
               ),
             ),
 
+            // KATEGORI
             Text(
               kategori,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontSize: 12,
+                color: Colors.green,
               ),
             ),
 
-            const SizedBox(height: 4),
+            // STOK
+            Text(
+              'Stok: $stok',
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            ),
 
-            // Memberi ruang fleksibel agar layout tetap aman
-            Expanded(
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                child: KeranjangItem(
-                  stok: stok,
-                  harga: hargaAnggota,
-                ),
+            const Spacer(),
+
+            // KERANJANG ITEM
+            Center(
+              child: KeranjangItem(
+                stok: stok,
+                harga: hargaAnggota,
               ),
             ),
           ],
@@ -272,6 +324,10 @@ class BarangCard extends StatelessWidget {
     );
   }
 }
+
+// ============================================================
+// KERANJANG ITEM - STATEFUL
+// ============================================================
 
 class KeranjangItem extends StatefulWidget {
   final int stok;
@@ -293,6 +349,11 @@ class _KeranjangItemState extends State<KeranjangItem> {
   @override
   void initState() {
     super.initState();
+
+    if (widget.stok == 0) {
+      jumlah = 0;
+    }
+
     print('initState dipanggil');
   }
 
@@ -306,52 +367,76 @@ class _KeranjangItemState extends State<KeranjangItem> {
   Widget build(BuildContext context) {
     print('build dipanggil');
 
-    int totalHarga = jumlah * widget.harga;
+    final int totalHarga = jumlah * widget.harga;
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
+        // TOMBOL KURANG
         IconButton(
-          icon: const Icon(Icons.remove),
-          onPressed: () {
-            setState(() {
-              if (jumlah > 0) {
-                jumlah--;
-              }
-            });
-          },
+          icon: const Icon(
+            Icons.remove,
+            color: Colors.green,
+          ),
+          tooltip: 'Kurangi jumlah',
+
+          onPressed: jumlah > 0
+              ? () {
+                  setState(() {
+                    jumlah--;
+                  });
+                }
+              : null,
         ),
 
+        // JUMLAH + TOTAL
         Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(jumlah.toString()),
+            Text(
+              jumlah.toString(),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
             Text(
               'Rp$totalHarga',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 12,
+                fontSize: 11,
+                color: Colors.green,
               ),
             ),
           ],
         ),
 
+        // TOMBOL TAMBAH
         IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: () {
-            if (jumlah < widget.stok) {
-              setState(() {
-                jumlah++;
-              });
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Jumlah melebihi stok barang!',
-                  ),
-                ),
-              );
-            }
-          },
+          icon: const Icon(
+            Icons.add,
+            color: Colors.green,
+          ),
+          tooltip: 'Tambah jumlah',
+
+          onPressed: jumlah < widget.stok
+              ? () {
+                  setState(() {
+                    jumlah++;
+                  });
+                }
+              : () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Jumlah melebihi stok barang!',
+                      ),
+                    ),
+                  );
+                },
         ),
       ],
     );

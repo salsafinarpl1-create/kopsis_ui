@@ -20,6 +20,12 @@ class _KeranjangItemState extends State<KeranjangItem> {
   @override
   void initState() {
     super.initState();
+
+    // Kalau stok 0, jumlah dimulai dari 0
+    if (widget.stok == 0) {
+      jumlah = 0;
+    }
+
     print('initState dipanggil');
   }
 
@@ -33,46 +39,63 @@ class _KeranjangItemState extends State<KeranjangItem> {
   Widget build(BuildContext context) {
     print('build dipanggil');
 
-    int totalHarga = jumlah * widget.harga;
+    final int totalHarga = jumlah * widget.harga;
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
           icon: const Icon(Icons.remove),
-          onPressed: () {
-            setState(() {
-              if (jumlah > 0) {
-                jumlah--;
-              }
-            });
-          },
+          onPressed: jumlah > 0
+              ? () {
+                  setState(() {
+                    jumlah--;
+                  });
+                }
+              : null,
         ),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(jumlah.toString()),
-            Text(
-              'Rp$totalHarga',
-              style: const TextStyle(fontSize: 12),
-            ),
-          ],
+
+        // Jumlah dan total harga
+        Flexible(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                jumlah.toString(),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                'Rp$totalHarga',
+                style: const TextStyle(
+                  fontSize: 12,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
+
         IconButton(
           icon: const Icon(Icons.add),
-          onPressed: () {
-            if (jumlah < widget.stok) {
-              setState(() {
-                jumlah++;
-              });
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Jumlah melebihi stok barang!'),
-                ),
-              );
-            }
-          },
+          onPressed: jumlah < widget.stok
+              ? () {
+                  setState(() {
+                    jumlah++;
+                  });
+                }
+              : () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Jumlah melebihi stok barang!',
+                      ),
+                    ),
+                  );
+                },
         ),
       ],
     );

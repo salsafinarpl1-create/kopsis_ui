@@ -9,18 +9,19 @@ class MyApp extends StatefulWidget {
 
   static const List<Map<String, dynamic>> daftarBarang = [
     {
-      'nama': 'Buku Tulis',
+      'nama':
+          'Buku Tulis Bergaris 58 Lembar Sampul Tebal Untuk Keperluan Sekolah',
       'anggota': 3000,
       'umum': 3500,
       'stok': 40,
-      'kategori': 'Alat Tulis',
+      'kategori': 'ATK',
     },
     {
       'nama': 'Pulpen',
       'anggota': 2500,
       'umum': 3000,
       'stok': 25,
-      'kategori': 'Alat Tulis',
+      'kategori': 'ATK',
     },
     {
       'nama': 'Roti',
@@ -33,50 +34,50 @@ class MyApp extends StatefulWidget {
       'nama': 'Pensil',
       'anggota': 2000,
       'umum': 2500,
-      'stok': 30,
-      'kategori': 'Alat Tulis',
+      'stok': 20,
+      'kategori': 'ATK',
     },
     {
       'nama': 'Penghapus',
       'anggota': 1500,
       'umum': 2000,
-      'stok': 20,
-      'kategori': 'Alat Tulis',
-    },
-    {
-      'nama': 'Penggaris',
-      'anggota': 2500,
-      'umum': 3000,
       'stok': 18,
-      'kategori': 'Alat Tulis',
-    },
-    {
-      'nama': 'Spidol',
-      'anggota': 4000,
-      'umum': 4500,
-      'stok': 12,
-      'kategori': 'Alat Tulis',
+      'kategori': 'ATK',
     },
     {
       'nama': 'Buku Gambar',
-      'anggota': 5000,
-      'umum': 6000,
-      'stok': 0,
-      'kategori': 'Alat Tulis',
+      'anggota': 4000,
+      'umum': 4500,
+      'stok': 12,
+      'kategori': 'ATK',
     },
     {
-      'nama': 'Lem Kertas',
+      'nama': 'Air Mineral',
+      'anggota': 3000,
+      'umum': 3500,
+      'stok': 30,
+      'kategori': 'Minuman',
+    },
+    {
+      'nama': 'Teh Kotak',
+      'anggota': 4000,
+      'umum': 4500,
+      'stok': 20,
+      'kategori': 'Minuman',
+    },
+    {
+      'nama': 'Mie Instan',
       'anggota': 3500,
       'umum': 4000,
-      'stok': 14,
-      'kategori': 'Alat Tulis',
+      'stok': 10,
+      'kategori': 'Makanan',
     },
     {
-      'nama': 'Tempat Pensil',
-      'anggota': 10000,
-      'umum': 12000,
-      'stok': 10,
-      'kategori': 'Aksesoris',
+      'nama': 'Snack',
+      'anggota': 2500,
+      'umum': 3000,
+      'stok': 15,
+      'kategori': 'Makanan',
     },
   ];
 
@@ -85,36 +86,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late TextEditingController _controller;
-  String kataCari = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  String pencarian = '';
 
   @override
   Widget build(BuildContext context) {
-    // Hanya menampilkan barang yang stoknya lebih dari 0
-    final barangTersedia = MyApp.daftarBarang
-        .where((barang) => barang['stok'] > 0)
-        .toList();
+    final daftarFilter = MyApp.daftarBarang.where((barang) {
+      final nama = barang['nama'].toString().toLowerCase();
 
-    // Menyaring barang berdasarkan kata yang diketik
-    final hasilCari = barangTersedia
-        .where(
-          (barang) => barang['nama']
-              .toLowerCase()
-              .contains(kataCari),
-        )
-        .toList();
+      return nama.contains(pencarian.toLowerCase());
+    }).toList();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -127,64 +107,74 @@ class _MyAppState extends State<MyApp> {
             Padding(
               padding: const EdgeInsets.all(12),
               child: TextField(
-                controller: _controller,
-                decoration: const InputDecoration(
-                  hintText: 'Cari barang...',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: 'Cari barang',
+                  hintText: 'Masukkan nama barang',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                onChanged: (nilai) {
+                onChanged: (value) {
                   setState(() {
-                    kataCari = nilai.toLowerCase().trim();
+                    pencarian = value;
                   });
                 },
               ),
             ),
 
-            // Menampilkan lebar layar
-            Builder(
-              builder: (context) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Lebar layar: ${MediaQuery.of(context).size.width.toStringAsFixed(0)} px',
-                    ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Lebar layar: '
+                  '${MediaQuery.of(context).size.width.toStringAsFixed(0)} px',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
                   ),
-                );
-              },
+                ),
+              ),
             ),
+
+            const SizedBox(height: 10),
 
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  int kolom;
+                  int jumlahKolom;
 
                   if (constraints.maxWidth < 600) {
-                    kolom = 1;
-                  } else if (constraints.maxWidth < 900) {
-                    kolom = 2;
+                    jumlahKolom = 1;
+                  } else if (constraints.maxWidth < 1000) {
+                    jumlahKolom = 2;
                   } else {
-                    kolom = 3;
+                    jumlahKolom = 3;
                   }
 
                   return GridView.builder(
                     padding: const EdgeInsets.all(8),
                     gridDelegate:
                         SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: kolom,
-                      childAspectRatio: 3,
+                      crossAxisCount: jumlahKolom,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+
+                      // Dibuat lebih proporsional agar tidak
+                      // menyebabkan overflow ke bawah.
+                      childAspectRatio: 1.8,
                     ),
-                    itemCount: hasilCari.length,
+                    itemCount: daftarFilter.length,
                     itemBuilder: (context, index) {
-                      final barang = hasilCari[index];
+                      final barang = daftarFilter[index];
 
                       return BarangCard(
                         nama: barang['nama'],
                         hargaAnggota: barang['anggota'],
                         stok: barang['stok'],
                         kategori: barang['kategori'],
+                        sorot: barang['stok'] == 0,
                       );
                     },
                   );
@@ -198,15 +188,12 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-// ===============================
-// BARANG CARD
-// ===============================
-
 class BarangCard extends StatelessWidget {
   final String nama;
   final int hargaAnggota;
   final int stok;
   final String kategori;
+  final bool sorot;
 
   const BarangCard({
     super.key,
@@ -214,53 +201,70 @@ class BarangCard extends StatelessWidget {
     required this.hargaAnggota,
     required this.stok,
     required this.kategori,
+    this.sorot = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.green.shade200,
-      margin: const EdgeInsets.symmetric(
-        horizontal: 8,
-        vertical: 4,
-      ),
+      color: sorot ? Colors.green[100] : null,
+      margin: const EdgeInsets.all(8),
       child: Padding(
         padding: const EdgeInsets.all(8),
-        child: Row(
+
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.inventory_2),
+            // Icon berada di atas
+            const Icon(
+              Icons.inventory_2,
+              size: 32,
+            ),
 
-            const SizedBox(width: 10),
+            const SizedBox(height: 6),
 
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    nama,
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
-                  ),
-                  Text(
-                    'Anggota Rp $hargaAnggota',
-                    style: const TextStyle(
-                      fontSize: 12,
-                    ),
-                  ),
-                  Text(
-                    kategori,
-                    style: const TextStyle(
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
+            // Nama barang dipotong jika terlalu panjang
+            Text(
+              nama,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
               ),
             ),
 
-            KeranjangItem(
-              stok: stok,
-              harga: hargaAnggota,
+            const SizedBox(height: 4),
+
+            Text(
+              'Anggota Rp $hargaAnggota',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 13,
+              ),
+            ),
+
+            Text(
+              kategori,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            ),
+
+            const SizedBox(height: 4),
+
+            // Memberi ruang fleksibel agar layout tetap aman
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: KeranjangItem(
+                  stok: stok,
+                  harga: hargaAnggota,
+                ),
+              ),
             ),
           ],
         ),
@@ -268,10 +272,6 @@ class BarangCard extends StatelessWidget {
     );
   }
 }
-
-// ===============================
-// KERANJANG ITEM
-// ===============================
 
 class KeranjangItem extends StatefulWidget {
   final int stok;

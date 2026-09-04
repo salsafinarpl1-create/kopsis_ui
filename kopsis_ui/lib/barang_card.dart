@@ -24,7 +24,11 @@ class BarangCard extends StatelessWidget {
       margin: const EdgeInsets.all(8),
       child: ListTile(
         leading: const Icon(Icons.inventory_2),
-        title: Text(nama),
+        title: Text(
+          nama,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
